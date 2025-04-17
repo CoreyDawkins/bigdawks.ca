@@ -1,52 +1,94 @@
 "use client";
 
 import React from "react";
+import { useFormValidation } from "@/hooks/useFormValidation";
 
 const Form: React.FC = () => {
+  const { formData, errors, handleInputChange, handleSubmit } = useFormValidation();
+
+  const onSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    handleSubmit((data) => {
+      console.log("Form Data:", data);
+      alert("Form submitted successfully! (Placeholder)");
+    });
+  };
+
   return (
-    <form id="contactForm" noValidate>
+    <form id="contactForm" noValidate onSubmit={onSubmit}>
       <div className="mb-3">
         <label htmlFor="firstName" className="form-label">
           First Name*
         </label>
-        <input type="text" className="form-control" id="firstName" required />
-        <div className="invalid-feedback">
-          First name is required and can only contain letters, dots, or hyphens.
-        </div>
+        <input
+          type="text"
+          className={`form-control ${errors.firstName ? "is-invalid" : ""}`}
+          id="firstName"
+          name="firstName"
+          value={formData.firstName}
+          onChange={handleInputChange}
+          required
+        />
+        <div className="invalid-feedback">{errors.firstName}</div>
       </div>
       <div className="mb-3">
         <label htmlFor="lastName" className="form-label">
           Last Name*
         </label>
-        <input type="text" className="form-control" id="lastName" required />
-        <div className="invalid-feedback">
-          Last name is required and can only contain letters, dots, or hyphens.
-        </div>
+        <input
+          type="text"
+          className={`form-control ${errors.lastName ? "is-invalid" : ""}`}
+          id="lastName"
+          name="lastName"
+          value={formData.lastName}
+          onChange={handleInputChange}
+          required
+        />
+        <div className="invalid-feedback">{errors.lastName}</div>
       </div>
       <div className="mb-3">
         <label htmlFor="company" className="form-label">
           Company
         </label>
-        <input type="text" className="form-control" id="company" />
+        <input
+          type="text"
+          className="form-control"
+          id="company"
+          name="company"
+          value={formData.company}
+          onChange={handleInputChange}
+        />
       </div>
       <div className="row mb-3">
         <div className="col">
           <label htmlFor="fromPostal" className="form-label">
             From Postal Code*
           </label>
-          <input type="text" className="form-control" id="fromPostal" required />
-          <div className="invalid-feedback">
-            Valid postal code (e.g., A1A 1A1) is required.
-          </div>
+          <input
+            type="text"
+            className={`form-control ${errors.fromPostal ? "is-invalid" : ""}`}
+            id="fromPostal"
+            name="fromPostal"
+            value={formData.fromPostal}
+            onChange={handleInputChange}
+            required
+          />
+          <div className="invalid-feedback">{errors.fromPostal}</div>
         </div>
         <div className="col">
           <label htmlFor="toPostal" className="form-label">
             To Postal Code*
           </label>
-          <input type="text" className="form-control" id="toPostal" required />
-          <div className="invalid-feedback">
-            Valid postal code (e.g., A1A 1A1) is required.
-          </div>
+          <input
+            type="text"
+            className={`form-control ${errors.toPostal ? "is-invalid" : ""}`}
+            id="toPostal"
+            name="toPostal"
+            value={formData.toPostal}
+            onChange={handleInputChange}
+            required
+          />
+          <div className="invalid-feedback">{errors.toPostal}</div>
         </div>
       </div>
       <div className="mb-3">
@@ -56,15 +98,31 @@ const Form: React.FC = () => {
         <label htmlFor="email" className="form-label">
           Email Address*
         </label>
-        <input type="email" className="form-control" id="email" required />
-        <div className="invalid-feedback">Valid email is required.</div>
+        <input
+          type="email"
+          className={`form-control ${errors.email ? "is-invalid" : ""}`}
+          id="email"
+          name="email"
+          value={formData.email}
+          onChange={handleInputChange}
+          required
+        />
+        <div className="invalid-feedback">{errors.email}</div>
       </div>
       <div className="mb-3">
         <label htmlFor="phone" className="form-label">
           Phone Number*
         </label>
-        <input type="tel" className="form-control" id="phone" required />
-        <div className="invalid-feedback">Valid phone number is required.</div>
+        <input
+          type="tel"
+          className={`form-control ${errors.phone ? "is-invalid" : ""}`}
+          id="phone"
+          name="phone"
+          value={formData.phone}
+          onChange={handleInputChange}
+          required
+        />
+        <div className="invalid-feedback">{errors.phone}</div>
       </div>
       <div className="mb-3">
         <label className="form-label">Items*</label>
@@ -75,6 +133,8 @@ const Form: React.FC = () => {
             id="itemsFurniture"
             name="items"
             value="furniture"
+            checked={formData.items.includes("furniture")}
+            onChange={handleInputChange}
           />
           <label className="form-check-label" htmlFor="itemsFurniture">
             Furniture
@@ -87,6 +147,8 @@ const Form: React.FC = () => {
             id="itemsBoxes"
             name="items"
             value="boxes"
+            checked={formData.items.includes("boxes")}
+            onChange={handleInputChange}
           />
           <label className="form-check-label" htmlFor="itemsBoxes">
             Boxes
@@ -99,6 +161,8 @@ const Form: React.FC = () => {
             id="itemsBags"
             name="items"
             value="bags"
+            checked={formData.items.includes("bags")}
+            onChange={handleInputChange}
           />
           <label className="form-check-label" htmlFor="itemsBags">
             Bags
@@ -111,6 +175,8 @@ const Form: React.FC = () => {
             id="itemsPlants"
             name="items"
             value="plants"
+            checked={formData.items.includes("plants")}
+            onChange={handleInputChange}
           />
           <label className="form-check-label" htmlFor="itemsPlants">
             Plants
@@ -123,13 +189,20 @@ const Form: React.FC = () => {
             id="itemsOther"
             name="items"
             value="other"
+            checked={formData.items.includes("other")}
+            onChange={handleInputChange}
           />
           <label className="form-check-label" htmlFor="itemsOther">
             Other
           </label>
         </div>
-        <div className="invalid-feedback d-block" id="itemsFeedback">
-          At least one item must be selected.
+        <div
+          className={`invalid-feedback d-block ${
+            errors.items ? "d-block" : "d-none"
+          }`}
+          id="itemsFeedback"
+        >
+          {errors.items}
         </div>
       </div>
       <div className="mb-3">
@@ -141,6 +214,8 @@ const Form: React.FC = () => {
             id="accessStairs"
             name="accessibility"
             value="stairs"
+            checked={formData.accessibility.includes("stairs")}
+            onChange={handleInputChange}
           />
           <label className="form-check-label" htmlFor="accessStairs">
             Stairs
@@ -153,6 +228,8 @@ const Form: React.FC = () => {
             id="accessElevator"
             name="accessibility"
             value="elevator"
+            checked={formData.accessibility.includes("elevator")}
+            onChange={handleInputChange}
           />
           <label className="form-check-label" htmlFor="accessElevator">
             Elevator
@@ -165,13 +242,20 @@ const Form: React.FC = () => {
             id="accessLoading"
             name="accessibility"
             value="loading"
+            checked={formData.accessibility.includes("loading")}
+            onChange={handleInputChange}
           />
           <label className="form-check-label" htmlFor="accessLoading">
             Designated Loading Area
           </label>
         </div>
-        <div className="invalid-feedback d-block" id="accessibilityFeedback">
-          At least one accessibility option must be selected.
+        <div
+          className={`invalid-feedback d-block ${
+            errors.accessibility ? "d-block" : "d-none"
+          }`}
+          id="accessibilityFeedback"
+        >
+          {errors.accessibility}
         </div>
       </div>
       <div className="mb-3">
@@ -180,12 +264,15 @@ const Form: React.FC = () => {
         </label>
         <input
           type="text"
-          className="form-control"
+          className={`form-control ${errors.preferredDate ? "is-invalid" : ""}`}
           id="preferredDate"
+          name="preferredDate"
+          value={formData.preferredDate}
+          onChange={handleInputChange}
           required
           readOnly
         />
-        <div className="invalid-feedback">Preferred date is required.</div>
+        <div className="invalid-feedback">{errors.preferredDate}</div>
       </div>
       <button type="submit" className="btn btn-primary">
         Submit
