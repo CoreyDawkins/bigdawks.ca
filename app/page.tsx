@@ -5,7 +5,7 @@ import Script from "next/script";
 import { useCalendars } from "@/hooks/useCalendars";
 import Calendar from "@/components/Calendar";
 import Form from "@/components/Form";
-import "../styles/calendars.css"; // Correctly import the CSS file
+import "../styles/calendars.css";
 
 export default function Home() {
   const { calendars, handleDateClick, preferredDateInputRef } = useCalendars(
