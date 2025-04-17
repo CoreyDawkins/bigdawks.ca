@@ -5,6 +5,7 @@ import Script from "next/script";
 import { useCalendars } from "@/hooks/useCalendars";
 import Calendar from "@/components/Calendar";
 import Form from "@/components/Form";
+import "../styles/moving.css";
 import "../styles/calendars.css";
 
 export default function Home() {
@@ -24,7 +25,6 @@ export default function Home() {
           href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
           rel="stylesheet"
         />
-        <link rel="stylesheet" href="/moving.css" />
       </Head>
 
       <div className="container my-5">
