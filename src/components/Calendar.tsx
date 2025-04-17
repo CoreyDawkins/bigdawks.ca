@@ -5,7 +5,7 @@ import React from "react";
 interface CalendarProps {
   year: number;
   month: number;
-  onDateClick: (date: Date) => void;
+  onDateClick: (date: Date | string) => void; // Updated type to accept both Date and string
 }
 
 const Calendar: React.FC<CalendarProps> = ({ year, month, onDateClick }) => {
@@ -28,7 +28,9 @@ const Calendar: React.FC<CalendarProps> = ({ year, month, onDateClick }) => {
           <div
             key={`${i}-${j}`}
             className="calendar-cell calendar-date"
-            onClick={() => onDateClick(new Date(year, month, currentDay))}
+            onClick={() =>
+              onDateClick(new Date(year, month, currentDay).toISOString().split("T")[0])
+            }
           >
             {currentDay}
           </div>
