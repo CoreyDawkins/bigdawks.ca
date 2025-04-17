@@ -8,15 +8,12 @@ import Calendar from "@/components/Calendar";
 import Form from "@/components/Form";
 
 export default function Home() {
-  const [formContent, setFormContent] = useState<string>("");
-
-  // Load form via AJAX
-  useEffect(() => {
-    $.getScript("/form.js", () => {
-      // @ts-ignore
-      setFormContent(window.formContent);
-    });
-  }, []);
+  const { calendars, handleDateClick } = useCalendars((date) => {
+    const input = document.getElementById(
+      "preferredDate"
+    ) as HTMLInputElement;
+    if (input) input.value = date;
+  });
 
   return (
     <>
@@ -24,48 +21,34 @@ export default function Home() {
         <meta charSet="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>CDawks' Moving</title>
-        {/* Bootstrap CSS */}
         <link
           href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
           rel="stylesheet"
         />
-        {/* Custom CSS */}
         <link rel="stylesheet" href="/moving.css" />
-        <link rel="stylesheet" href="/calendars.css" />
-        {/* jQuery */}
-        <script src="https://code.jquery.com/jquery-3.6.0.min.js" async />
-        {/* Google Maps API */}
+        <script src="https://cdn.jsdelivr.net/npm/flatpickr" async />
         <script
           async
           defer
-          src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&callback=initMap"
+          src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=geometry"
         />
       </Head>
       <div className="container my-5">
-        {/* Calendars Section */}
         <div className="row mb-5" id="calendars">
-          <div className="col-md-3">
-            <div className="calendar" id="calendar1"></div>
-          </div>
-          <div className="col-md-3">
-            <div className="calendar" id="calendar2"></div>
-          </div>
-          <div className="col-md-3">
-            <div className="calendar" id="calendar3"></div>
-          </div>
-          <div className="col-md-3">
-            <div className="calendar" id="calendar4"></div>
-          </div>
+          {calendars.map((cal, index) => (
+            <div key={index} className="col-md-3">
+              <Calendar
+                year={cal.year}
+                month={cal.month}
+                onDateClick={handleDateClick}
+              />
+            </div>
+          ))}
         </div>
-
-        {/* Contact Form Section */}
         <div className="row">
           <div className="col-md-8 mx-auto">
             <h2>Contact Us</h2>
-            <div className="col-md-8 mx-auto">
-              <h2>Contact Us</h2>
-              <Form />
-            </div>
+            <Form />
           </div>
         </div>
       </div>
