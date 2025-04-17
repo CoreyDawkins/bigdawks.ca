@@ -1,20 +1,18 @@
 "use client";
 
 import Head from "next/head";
-// import { useEffect, useState } from "react";
-// import $ from "jquery";
+import Script from "next/script";
 import { useCalendars } from "@/hooks/useCalendars";
 import Calendar from "@/components/Calendar";
 import Form from "@/components/Form";
-import "../public/calendars.css";
+import "../styles/calendars.css"; // Correctly import the CSS file
 
 export default function Home() {
-  const { calendars, handleDateClick } = useCalendars((date) => {
-    const input = document.getElementById(
-      "preferredDate"
-    ) as HTMLInputElement;
-    if (input) input.value = date;
-  });
+  const { calendars, handleDateClick, preferredDateInputRef } = useCalendars(
+    (date) => {
+      console.log("Selected Date:", date); // Log the selected date
+    }
+  );
 
   return (
     <>
@@ -27,13 +25,8 @@ export default function Home() {
           rel="stylesheet"
         />
         <link rel="stylesheet" href="/moving.css" />
-        <script src="https://cdn.jsdelivr.net/npm/flatpickr" async />
-        <script
-          async
-          defer
-          src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=geometry"
-        />
       </Head>
+
       <div className="container my-5">
         <div className="row mb-5" id="calendars">
           {calendars.map((cal, index) => (
@@ -54,17 +47,31 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Bootstrap JS and Popper */}
-      <script
-        src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
-        async
+      {/* Preferred Date Input */}
+      <input
+        id="preferredDate"
+        ref={preferredDateInputRef}
+        type="text"
+        placeholder="Preferred Date"
+        readOnly
       />
-      {/* Flatpickr */}
-      <script src="https://cdn.jsdelivr.net/npm/flatpickr" async />
+
+      {/* Bootstrap JS and Popper */}
+      <Script
+        src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+        strategy="lazyOnload"
+      />
+
+      {/* Google Maps API */}
+      <Script
+        src={`https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&libraries=geometry`}
+        strategy="lazyOnload"
+      />
+
       {/* Custom JS */}
-      <script src="/validation.js" async />
-      <script src="/map.js" async />
-      <script src="/moving.js" async />
+      <Script src="/validation.js" strategy="lazyOnload" />
+      <Script src="/map.js" strategy="lazyOnload" />
+      <Script src="/moving.js" strategy="lazyOnload" />
     </>
   );
 }
