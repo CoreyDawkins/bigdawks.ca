@@ -31,6 +31,7 @@ export default function Home() {
         />
         {/* Custom CSS */}
         <link rel="stylesheet" href="/moving.css" />
+        <link rel="stylesheet" href="/calendars.css" />
         {/* jQuery */}
         <script src="https://code.jquery.com/jquery-3.6.0.min.js" async />
         {/* Google Maps API */}
