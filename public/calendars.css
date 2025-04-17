@@ -1,0 +1,30 @@
+/* Input Calendar */
+
+.calendar-header {
+  text-align: center;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+.calendar-days {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  text-align: center;
+}
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+}
+.calendar-cell {
+  text-align: center;
+  padding: 5px;
+}
+.calendar-date {
+  cursor: pointer;
+}
+.calendar-date:hover {
+  background-color: #f0f0f0;
+}
+.empty {
+  background-color: #f9f9f9;
+}
