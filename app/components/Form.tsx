@@ -2,6 +2,7 @@
 
 import React from "react";
 import { useFormValidation } from "@/hooks/useFormValidation";
+import Map from "@/components/Map";
 
 const Form: React.FC = () => {
   const { formData, errors, handleInputChange, handleSubmit } = useFormValidation();
