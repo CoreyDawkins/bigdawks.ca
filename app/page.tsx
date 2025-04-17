@@ -3,7 +3,7 @@
 import Head from "next/head";
 // import { useEffect, useState } from "react";
 import $ from "jquery";
-import { useCalendars } from "@/hooks/useCalendars.ts";
+import { useCalendars } from "../hooks/useCalendars.ts";
 import Calendar from "@/components/Calendar";
 import Form from "@/components/Form";
 
