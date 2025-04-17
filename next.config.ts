@@ -1,10 +1,6 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  // Enable experimental features (optional)
-  experimental: {
-    appDir: true, // Enable the new App Router (if applicable)
-  },
 
   // Configure images (optional)
   images: {
