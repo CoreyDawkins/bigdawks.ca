@@ -6,7 +6,7 @@ import Head from "next/head";
 import { useCalendars } from "@/hooks/useCalendars";
 import Calendar from "@/components/Calendar";
 import Form from "@/components/Form";
-import "calendars.css";
+import "../public/calendars.css";
 
 export default function Home() {
   const { calendars, handleDateClick } = useCalendars((date) => {
