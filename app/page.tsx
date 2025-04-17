@@ -5,7 +5,7 @@ import Script from "next/script";
 import { useCalendars } from "@/hooks/useCalendars";
 import Calendar from "@/components/Calendar";
 import Form from "@/components/Form";
-import "../styles/moving.css";
+import "../public/moving.css";
 import "../styles/calendars.css";
 
 export default function Home() {
