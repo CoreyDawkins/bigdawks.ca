@@ -92,7 +92,7 @@ const Form: React.FC = () => {
         </div>
       </div>
       <div className="mb-3">
-        <div id="map" style={{ height: "400px", display: "none" }}></div>
+        <Map fromPostal={formData.fromPostal} toPostal={formData.toPostal} />
       </div>
       <div className="mb-3">
         <label htmlFor="email" className="form-label">
