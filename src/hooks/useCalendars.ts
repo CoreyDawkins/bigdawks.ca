@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import flatpickr from "flatpickr";
+import "flatpickr/dist/flatpickr.min.css";
 
 export function useCalendars(setPreferredDate: (date: string) => void) {
   const [calendars, setCalendars] = useState<
