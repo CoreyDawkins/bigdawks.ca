@@ -1,7 +1,7 @@
 "use client";
 
 import Head from "next/head";
-import { useEffect, useState } from "react";
+// import { useEffect, useState } from "react";
 import $ from "jquery";
 import { useCalendars } from "@/hooks/useCalendars";
 import Calendar from "@/components/Calendar";
