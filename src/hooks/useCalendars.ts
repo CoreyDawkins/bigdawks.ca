@@ -49,10 +49,13 @@ export function useCalendars(setPreferredDate: (date: string | Date) => void) {
   }, [setPreferredDate]);
 
   // Handle date click from calendar
-  const handleDateClick = (date: Date) => {
-    const formattedDate = `${date.getFullYear()}-${(date.getMonth() + 1)
-      .toString()
-      .padStart(2, "0")}-${date.getDate().toString().padStart(2, "0")}`;
+  const handleDateClick = (date: Date | string) => {
+    const formattedDate =
+      date instanceof Date
+        ? `${date.getFullYear()}-${(date.getMonth() + 1)
+            .toString()
+            .padStart(2, "0")}-${date.getDate().toString().padStart(2, "0")}`
+        : date;
 
     // Update the preferred date
     setPreferredDate(formattedDate);
