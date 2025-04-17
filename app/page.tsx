@@ -5,7 +5,7 @@ import Script from "next/script";
 import { useCalendars } from "@/hooks/useCalendars";
 import Calendar from "@/components/Calendar";
 import Form from "@/components/Form";
-import "../public/moving.css";
+import "../public/moving.css"; // Ensure this path is correct
 
 export default function Home() {
   const { calendars, handleDateClick, preferredDateInputRef } = useCalendars(
@@ -33,7 +33,7 @@ export default function Home() {
               <Calendar
                 year={cal.year}
                 month={cal.month}
-                onDateClick={handleDateClick}
+                onDateClick={handleDateClick} // This now works with both Date and string
               />
             </div>
           ))}
