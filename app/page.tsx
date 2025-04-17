@@ -3,6 +3,7 @@
 import Head from "next/head";
 import { useEffect, useState } from "react";
 import $ from "jquery";
+import Form from "@/components/Form";
 
 export default function Home() {
   const [formContent, setFormContent] = useState<string>("");
