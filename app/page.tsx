@@ -58,10 +58,10 @@ export default function Home() {
         <div className="row">
           <div className="col-md-8 mx-auto">
             <h2>Contact Us</h2>
-            <div
-              id="formContainer"
-              dangerouslySetInnerHTML={{ __html: formContent }}
-            />
+            <div className="col-md-8 mx-auto">
+              <h2>Contact Us</h2>
+              <Form />
+            </div>
           </div>
         </div>
       </div>
