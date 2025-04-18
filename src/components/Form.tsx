@@ -1,11 +1,17 @@
 "use client";
 
-import React from "react";
+import React, { useState, useRef } from "react";
 import { useFormValidation } from "@/hooks/useFormValidation";
+import Flatpickr from "react-flatpickr";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCalendarAlt } from "@fortawesome/free-solid-svg-icons";
 import Map from "@/components/Map";
+import "../styles/validation.css";
 
 const Form: React.FC = () => {
-  const { formData, errors, handleInputChange, handleSubmit } = useFormValidation();
+  const { formData, errors, handleInputChange, handleSubmit, getValidationClass, getMessageClass } = useFormValidation();
+  const [showComment, setShowComment] = useState(false);
+  const flatpickrRef = useRef<any>(null);
 
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -13,6 +19,12 @@ const Form: React.FC = () => {
       console.log("Form Data:", data);
       alert("Form submitted successfully! (Placeholder)");
     });
+  };
+
+  const openCalendar = () => {
+    if (flatpickrRef.current) {
+      flatpickrRef.current.flatpickr.open();
+    }
   };
 
   return (
@@ -23,14 +35,16 @@ const Form: React.FC = () => {
         </label>
         <input
           type="text"
-          className={`form-control ${errors.firstName ? "is-invalid" : ""}`}
+          className={`form-control ${getValidationClass("firstName")}`}
           id="firstName"
           name="firstName"
           value={formData.firstName}
           onChange={handleInputChange}
           required
         />
-        <div className="invalid-feedback">{errors.firstName}</div>
+        <div className={`invalid-feedback ${getMessageClass("firstName")}`}>
+          {errors.firstName}
+        </div>
       </div>
       <div className="mb-3">
         <label htmlFor="lastName" className="form-label">
@@ -38,14 +52,16 @@ const Form: React.FC = () => {
         </label>
         <input
           type="text"
-          className={`form-control ${errors.lastName ? "is-invalid" : ""}`}
+          className={`form-control ${getValidationClass("lastName")}`}
           id="lastName"
           name="lastName"
           value={formData.lastName}
           onChange={handleInputChange}
           required
         />
-        <div className="invalid-feedback">{errors.lastName}</div>
+        <div className={`invalid-feedback ${getMessageClass("lastName")}`}>
+          {errors.lastName}
+        </div>
       </div>
       <div className="mb-3">
         <label htmlFor="company" className="form-label">
@@ -67,14 +83,16 @@ const Form: React.FC = () => {
           </label>
           <input
             type="text"
-            className={`form-control ${errors.fromPostal ? "is-invalid" : ""}`}
+            className={`form-control ${getValidationClass("fromPostal")}`}
             id="fromPostal"
             name="fromPostal"
             value={formData.fromPostal}
             onChange={handleInputChange}
             required
           />
-          <div className="invalid-feedback">{errors.fromPostal}</div>
+          <div className={`invalid-feedback ${getMessageClass("fromPostal")}`}>
+            {errors.fromPostal}
+          </div>
         </div>
         <div className="col">
           <label htmlFor="toPostal" className="form-label">
@@ -82,14 +100,16 @@ const Form: React.FC = () => {
           </label>
           <input
             type="text"
-            className={`form-control ${errors.toPostal ? "is-invalid" : ""}`}
+            className={`form-control ${getValidationClass("toPostal")}`}
             id="toPostal"
             name="toPostal"
             value={formData.toPostal}
             onChange={handleInputChange}
             required
           />
-          <div className="invalid-feedback">{errors.toPostal}</div>
+          <div className={`invalid-feedback ${getMessageClass("toPostal")}`}>
+            {errors.toPostal}
+          </div>
         </div>
       </div>
       <div className="mb-3">
@@ -101,14 +121,16 @@ const Form: React.FC = () => {
         </label>
         <input
           type="email"
-          className={`form-control ${errors.email ? "is-invalid" : ""}`}
+          className={`form-control ${getValidationClass("email")}`}
           id="email"
           name="email"
           value={formData.email}
           onChange={handleInputChange}
           required
         />
-        <div className="invalid-feedback">{errors.email}</div>
+        <div className={`invalid-feedback ${getMessageClass("email")}`}>
+          {errors.email}
+        </div>
       </div>
       <div className="mb-3">
         <label htmlFor="phone" className="form-label">
@@ -116,14 +138,16 @@ const Form: React.FC = () => {
         </label>
         <input
           type="tel"
-          className={`form-control ${errors.phone ? "is-invalid" : ""}`}
+          className={`form-control ${getValidationClass("phone")}`}
           id="phone"
           name="phone"
           value={formData.phone}
           onChange={handleInputChange}
           required
         />
-        <div className="invalid-feedback">{errors.phone}</div>
+        <div className={`invalid-feedback ${getMessageClass("phone")}`}>
+          {errors.phone}
+        </div>
       </div>
       <div className="mb-3">
         <label className="form-label">Items*</label>
@@ -198,9 +222,7 @@ const Form: React.FC = () => {
           </label>
         </div>
         <div
-          className={`invalid-feedback d-block ${
-            errors.items ? "d-block" : "d-none"
-          }`}
+          className={`invalid-feedback d-block ${getMessageClass("items")}`}
           id="itemsFeedback"
         >
           {errors.items}
@@ -251,29 +273,65 @@ const Form: React.FC = () => {
           </label>
         </div>
         <div
-          className={`invalid-feedback d-block ${
-            errors.accessibility ? "d-block" : "d-none"
-          }`}
+          className={`invalid-feedback d-block ${getMessageClass("accessibility")}`}
           id="accessibilityFeedback"
         >
           {errors.accessibility}
         </div>
       </div>
-      <div className="mb-3">
+      <div className="mb-3 position-relative">
         <label htmlFor="preferredDate" className="form-label">
           Preferred Date*
         </label>
-        <input
-          type="text"
-          className={`form-control ${errors.preferredDate ? "is-invalid" : ""}`}
-          id="preferredDate"
-          name="preferredDate"
-          value={formData.preferredDate}
-          onChange={handleInputChange}
-          required
-          readOnly
-        />
-        <div className="invalid-feedback">{errors.preferredDate}</div>
+        <div className="input-group">
+          <Flatpickr
+            className={`form-control ${getValidationClass("preferredDate")}`}
+            value={formData.preferredDate}
+            onChange={([date]) => handleInputChange({ target: { name: "preferredDate", value: date.toISOString().split("T")[0] } })}
+            options={{
+              dateFormat: "Y-m-d",
+              altInput: true,
+              altFormat: "F j, Y",
+            }}
+            ref={flatpickrRef}
+          />
+          <span className="input-group-text" onClick={openCalendar} style={{ cursor: "pointer" }}>
+            <FontAwesomeIcon icon={faCalendarAlt} />
+          </span>
+        </div>
+        <div className={`invalid-feedback ${getMessageClass("preferredDate")}`}>
+          {errors.preferredDate}
+        </div>
+      </div>
+      <div className="mb-3">
+        <a
+          href="#"
+          onClick={(e) => {
+            e.preventDefault();
+            setShowComment(true);
+          }}
+          className={showComment ? "d-none" : ""}
+        >
+          Need to include additional information?
+        </a>
+        {showComment && (
+          <div>
+            <label htmlFor="comment" className="form-label">
+              Additional Information
+            </label>
+            <textarea
+              className={`form-control ${getValidationClass("comment")}`}
+              id="comment"
+              name="comment"
+              value={formData.comment || ""}
+              onChange={handleInputChange}
+              rows={4}
+            />
+            <div className={`invalid-feedback ${getMessageClass("comment")}`}>
+              {errors.comment}
+            </div>
+          </div>
+        )}
       </div>
       <button type="submit" className="btn btn-primary">
         Submit

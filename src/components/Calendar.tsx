@@ -2,14 +2,16 @@
 
 import React from "react";
 import "../styles/calendars.css";
+import { useFormValidation } from "@/hooks/useFormValidation";
 
 interface CalendarProps {
   year: number;
   month: number;
-  onDateClick: (date: Date | string) => void; // Accepts both Date and string
+  onDateClick: (date: Date | string) => void;
 }
 
 const Calendar: React.FC<CalendarProps> = ({ year, month, onDateClick }) => {
+  const { formData } = useFormValidation();
   const date = new Date(year, month);
   const monthName = date.toLocaleString("default", { month: "long" });
   const daysInMonth = new Date(year, month + 1, 0).getDate();
@@ -22,17 +24,24 @@ const Calendar: React.FC<CalendarProps> = ({ year, month, onDateClick }) => {
   for (let i = 0; i < 6; i++) {
     for (let j = 0; j < 7; j++) {
       if (i === 0 && j < firstDay) {
-        // Empty cells before the first day of the month
         cells.push(<div key={`${i}-${j}`} className="calendar-cell empty" />);
       } else if (dayCounter <= daysInMonth) {
         const currentDay = dayCounter;
+        const selectedDate = formData.preferredDate
+          ? new Date(formData.preferredDate)
+          : null;
+        const isSelected =
+          selectedDate &&
+          selectedDate.getFullYear() === year &&
+          selectedDate.getMonth() === month &&
+          selectedDate.getDate() === currentDay;
         cells.push(
           <div
             key={`${i}-${j}`}
-            className="calendar-cell calendar-date"
+            className={`calendar-cell calendar-date ${isSelected ? "validation-success" : ""}`}
             onClick={() => {
-              const selectedDate = new Date(year, month, currentDay); // Create a Date object
-              onDateClick(selectedDate); // Pass the Date object to the callback
+              const selectedDate = new Date(year, month, currentDay);
+              onDateClick(selectedDate);
             }}
           >
             {currentDay}
@@ -40,7 +49,6 @@ const Calendar: React.FC<CalendarProps> = ({ year, month, onDateClick }) => {
         );
         dayCounter++;
       } else {
-        // Empty cells after the last day of the month
         cells.push(<div key={`${i}-${j}`} className="calendar-cell empty" />);
       }
     }
@@ -48,10 +56,7 @@ const Calendar: React.FC<CalendarProps> = ({ year, month, onDateClick }) => {
 
   return (
     <div className="calendar">
-      {/* Month and Year Header */}
       <div className="calendar-header">{`${monthName} ${year}`}</div>
-
-      {/* Days of the Week */}
       <div className="calendar-days">
         {daysOfWeek.map((day) => (
           <span key={day} className="calendar-day-label">
@@ -59,8 +64,6 @@ const Calendar: React.FC<CalendarProps> = ({ year, month, onDateClick }) => {
           </span>
         ))}
       </div>
-
-      {/* Calendar Grid */}
       <div className="calendar-grid">{cells}</div>
     </div>
   );

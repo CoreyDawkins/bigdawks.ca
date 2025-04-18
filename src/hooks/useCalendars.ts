@@ -2,15 +2,13 @@
 
 import { useEffect, useRef, useState } from "react";
 import flatpickr from "flatpickr";
-import "flatpickr/dist/flatpickr.min.css";
+import { useFormValidation } from "@/hooks/useFormValidation";
 
-export function useCalendars(setPreferredDate: (date: string | Date) => void) {
+export function useCalendars() {
   const [calendars, setCalendars] = useState<{ year: number; month: number }[]>([]);
-
-  // Ref for the preferred date input element
   const preferredDateInputRef = useRef<HTMLInputElement | null>(null);
+  const { formData, handleInputChange } = useFormValidation();
 
-  // Initialize calendars for the current and next three months
   useEffect(() => {
     const today = new Date();
     const months = [
@@ -20,7 +18,6 @@ export function useCalendars(setPreferredDate: (date: string | Date) => void) {
       { year: today.getFullYear(), month: today.getMonth() + 3 },
     ];
 
-    // Adjust for year rollover
     months.forEach((m) => {
       if (m.month >= 12) {
         m.month -= 12;
@@ -31,37 +28,44 @@ export function useCalendars(setPreferredDate: (date: string | Date) => void) {
     setCalendars(months);
   }, []);
 
-  // Initialize Flatpickr
   useEffect(() => {
     if (preferredDateInputRef.current) {
       const flatpickrInstance = flatpickr(preferredDateInputRef.current, {
         dateFormat: "Y-m-d",
         minDate: "today",
         onChange: (selectedDates, dateStr) => {
-          setPreferredDate(dateStr); // Pass the formatted string to the callback
+          const event = new Event("change", { bubbles: true });
+          Object.defineProperty(event, "target", {
+            value: { name: "preferredDate", value: dateStr },
+            writable: false,
+          });
+          handleInputChange(event as any);
         },
       });
 
       return () => {
-        flatpickrInstance.destroy(); // Clean up Flatpickr instance on unmount
+        flatpickrInstance.destroy();
       };
     }
-  }, [setPreferredDate]);
+  }, [handleInputChange]);
 
-  // Handle date click from calendar
   const handleDateClick = (date: Date | string) => {
     const formattedDate =
       date instanceof Date
-        ? `${date.getFullYear()}-${(date.getMonth() + 1)
+        ? `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, "0")}-${date
+            .getDate()
             .toString()
-            .padStart(2, "0")}-${date.getDate().toString().padStart(2, "0")}`
+            .padStart(2, "0")}`
         : date;
 
-    // Update the preferred date
-    setPreferredDate(formattedDate);
-
-    // Update Flatpickr if the input exists
     if (preferredDateInputRef.current) {
+      preferredDateInputRef.current.value = formattedDate;
+      const event = new Event("change", { bubbles: true });
+      Object.defineProperty(event, "target", {
+        value: { name: "preferredDate", value: formattedDate },
+        writable: false,
+      });
+      handleInputChange(event as any);
       flatpickr(preferredDateInputRef.current).setDate(formattedDate);
     }
   };

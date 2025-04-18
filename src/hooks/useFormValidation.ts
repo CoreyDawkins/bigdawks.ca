@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 interface FormData {
   firstName: string;
@@ -13,6 +13,7 @@ interface FormData {
   items: string[];
   accessibility: string[];
   preferredDate: string;
+  comment?: string;
 }
 
 interface FormErrors {
@@ -25,6 +26,7 @@ interface FormErrors {
   items?: string;
   accessibility?: string;
   preferredDate?: string;
+  comment?: string;
 }
 
 export function useFormValidation() {
@@ -39,70 +41,105 @@ export function useFormValidation() {
     items: [],
     accessibility: [],
     preferredDate: "",
+    comment: "",
   });
 
   const [errors, setErrors] = useState<FormErrors>({});
+  const [touched, setTouched] = useState<Partial<Record<keyof FormData, boolean>>>({});
 
-  const validateForm = (): boolean => {
-    const newErrors: FormErrors = {};
-
-    // First Name (letters, dots, hyphens only)
-    const nameRegex = /^[A-Za-z.-]+$/;
-    if (!formData.firstName.trim() || !nameRegex.test(formData.firstName.trim())) {
-      newErrors.firstName =
-        "First name is required and can only contain letters, dots, or hyphens.";
-    }
-
-    // Last Name (letters, dots, hyphens only)
-    if (!formData.lastName.trim() || !nameRegex.test(formData.lastName.trim())) {
-      newErrors.lastName =
-        "Last name is required and can only contain letters, dots, or hyphens.";
-    }
-
-    // Postal Codes (Canadian format: A1A 1A1)
+  const validateField = (name: keyof FormData, value: string | string[]): { status: string; message?: string } => {
+    const nameRegex = /^[A-Za-z\s.-]+$/;
     const postalRegex = /^[A-Za-z]\d[A-Za-z]\s?\d[A-Za-z]\d$/;
-    if (!postalRegex.test(formData.fromPostal.trim())) {
-      newErrors.fromPostal = "Valid postal code (e.g., A1A 1A1) is required.";
-    }
-    if (!postalRegex.test(formData.toPostal.trim())) {
-      newErrors.toPostal = "Valid postal code (e.g., A1A 1A1) is required.";
-    }
-
-    // Email
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(formData.email.trim())) {
-      newErrors.email = "Valid email is required.";
-    }
-
-    // Phone (North American format)
     const phoneRegex = /^\+?1?\d{10}$/;
-    if (!phoneRegex.test(formData.phone.replace(/[\s-()]/g, ""))) {
-      newErrors.phone = "Valid phone number is required.";
-    }
 
-    // Items
-    if (formData.items.length === 0) {
-      newErrors.items = "At least one item must be selected.";
+    switch (name) {
+      case "firstName":
+      case "lastName":
+        if (!value || typeof value !== "string" || !value.trim()) {
+          return { status: "validation-failed", message: `${name === "firstName" ? "First" : "Last"} name is required.` };
+        }
+        if (value.trim().length < 2) {
+          return { status: "validation-failed", message: `${name === "firstName" ? "First" : "Last"} name must be at least 2 characters.` };
+        }
+        if (!nameRegex.test(value.trim())) {
+          return {
+            status: "validation-failed",
+            message: `${name === "firstName" ? "First" : "Last"} name can only contain letters, spaces, dots, or hyphens.`,
+          };
+        }
+        return { status: "validation-success" };
+      case "fromPostal":
+      case "toPostal":
+        if (!value || typeof value !== "string" || !value.trim()) {
+          return { status: "validation-failed", message: "Postal code is required." };
+        }
+        if (!postalRegex.test(value.trim())) {
+          return { status: "validation-failed", message: "Valid postal code (e.g., A1A 1A1) is required." };
+        }
+        return { status: "validation-success" };
+      case "email":
+        if (!value || typeof value !== "string" || !value.trim()) {
+          return { status: "validation-failed", message: "Email is required." };
+        }
+        if (!emailRegex.test(value.trim())) {
+          return { status: "validation-failed", message: "Valid email is required." };
+        }
+        return { status: "validation-success" };
+      case "phone":
+        if (!value || typeof value !== "string" || !value.trim()) {
+          return { status: "validation-failed", message: "Phone number is required." };
+        }
+        if (!phoneRegex.test(value.replace(/[\s-()]/g, ""))) {
+          return { status: "validation-failed", message: "Valid phone number is required." };
+        }
+        return { status: "validation-success" };
+      case "items":
+        if (!Array.isArray(value) || value.length === 0) {
+          return { status: "validation-failed", message: "At least one item must be selected." };
+        }
+        return { status: "validation-success" };
+      case "accessibility":
+        if (!Array.isArray(value) || value.length === 0) {
+          return { status: "validation-failed", message: "At least one accessibility option must be selected." };
+        }
+        return { status: "validation-success" };
+      case "preferredDate":
+        if (!value || typeof value !== "string" || !value.trim()) {
+          return { status: "validation-failed", message: "Preferred date is required." };
+        }
+        return { status: "validation-success" };
+      case "comment":
+        return { status: "validation-success" }; // Optional field, no validation
+      default:
+        return { status: "validation-success" };
     }
+  };
 
-    // Accessibility
-    if (formData.accessibility.length === 0) {
-      newErrors.accessibility = "At least one accessibility option must be selected.";
-    }
+  useEffect(() => {
+    const newErrors: FormErrors = {};
+    const newTouched: Partial<Record<keyof FormData, boolean>> = { ...touched };
 
-    // Preferred Date
-    if (!formData.preferredDate) {
-      newErrors.preferredDate = "Preferred date is required.";
-    }
+    (Object.keys(formData) as (keyof FormData)[]).forEach((name) => {
+      const value = formData[name];
+      const { status, message } = validateField(name, value);
+      if (status === "validation-failed" && message) {
+        newErrors[name] = message;
+        newTouched[name] = true;
+      } else if (status === "validation-success") {
+        newTouched[name] = true;
+      }
+    });
 
     setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
+    setTouched(newTouched);
+  }, [formData]);
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value, type } = e.target;
+
     if (type === "checkbox") {
       const checked = (e.target as HTMLInputElement).checked;
       setFormData((prev) => {
@@ -119,6 +156,14 @@ export function useFormValidation() {
           };
         }
       });
+    } else if (name === "firstName" || name === "lastName") {
+      const nameRegex = /^[A-Za-z\s.-]*$/;
+      if (nameRegex.test(value)) {
+        setFormData((prev) => ({
+          ...prev,
+          [name]: value,
+        }));
+      }
     } else {
       setFormData((prev) => ({
         ...prev,
@@ -127,10 +172,37 @@ export function useFormValidation() {
     }
   };
 
+  const validateForm = (): boolean => {
+    const newErrors: FormErrors = {};
+
+    (Object.keys(formData) as (keyof FormData)[]).forEach((name) => {
+      const value = formData[name];
+      const { status, message } = validateField(name, value);
+      if (status === "validation-failed" && message) {
+        newErrors[name] = message;
+      }
+    });
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleSubmit = (callback: (data: FormData) => void) => {
     if (validateForm()) {
       callback(formData);
     }
+  };
+
+  const getValidationClass = (name: keyof FormData): string => {
+    if (!touched[name]) return "";
+    const { status } = validateField(name, formData[name]);
+    return status;
+  };
+
+  const getMessageClass = (name: keyof FormData): string => {
+    if (!touched[name]) return "";
+    const { status } = validateField(name, formData[name]);
+    return `${status}-message`;
   };
 
   return {
@@ -138,5 +210,7 @@ export function useFormValidation() {
     errors,
     handleInputChange,
     handleSubmit,
+    getValidationClass,
+    getMessageClass,
   };
 }

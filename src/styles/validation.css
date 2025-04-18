@@ -1,0 +1,29 @@
+.validation-success {
+  border-color: #28a745 !important;
+  background-color: #e6f4ea !important;
+}
+
+.validation-success-message {
+  color: #28a745;
+  display: block;
+}
+
+.validation-failed {
+  border-color: #dc3545 !important;
+  background-color: #f8d7da !important;
+}
+
+.validation-failed-message {
+  color: #dc3545;
+  display: block;
+}
+
+.validation-caution {
+  border-color: #ffc107 !important;
+  background-color: #fff3cd !important;
+}
+
+.validation-caution-message {
+  color: #ffc107;
+  display: block;
+}
