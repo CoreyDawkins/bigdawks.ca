@@ -24,14 +24,14 @@ const Map: React.FC<MapProps> = ({ fromPostal, toPostal }) => {
   const [path, setPath] = useState<google.maps.LatLngLiteral[]>([]);
   const googleMapsApiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
 
-  console.log("Map Props:", { fromPostal, toPostal }); // Debug props
+  console.log("Map Props:", { fromPostal, toPostal });
 
   useEffect(() => {
     if (!googleMapsApiKey) {
       console.error("Google Maps API Key is missing!");
       return;
     }
-    console.log("Google Maps API Key:", googleMapsApiKey); // Debug API key
+    console.log("Google Maps API Key:", googleMapsApiKey);
   }, [googleMapsApiKey]);
 
   useEffect(() => {
@@ -74,15 +74,13 @@ const Map: React.FC<MapProps> = ({ fromPostal, toPostal }) => {
           { lat: toLatLng.lat(), lng: toLatLng.lng() },
         ];
 
-        // Center map to fit both points
         const bounds = new google.maps.LatLngBounds();
         bounds.extend(newPath[0]);
         bounds.extend(newPath[1]);
         map.fitBounds(bounds);
 
-        // Update the path
         setPath(newPath);
-        console.log("Path set:", newPath); // Debug path
+        console.log("Path set:", newPath);
       })
       .catch((error) => {
         console.error("Geocoding error:", error);
@@ -129,8 +127,20 @@ const Map: React.FC<MapProps> = ({ fromPostal, toPostal }) => {
             position={path[0]}
             icon={{
               url: "https://maps.google.com/mapfiles/ms/icons/green-dot.png",
-              scaledSize: new google.maps.Size(40, 40),
+              scaledSize: new google.maps.Size(30, 30),
             }}
+            title="From Location"
+          />
+        )}
+
+        {path.length > 0 && (
+          <Marker
+            position={path[1]}
+            icon={{
+              url: "https://maps.google.com/mapfiles/ms/icons/red-dot.png",
+              scaledSize: new google.maps.Size(30, 30),
+            }}
+            title="To Location"
           />
         )}
       </GoogleMap>
