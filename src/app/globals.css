@@ -27,3 +27,10 @@ body {
 .page {
   padding: 30px;
 }
+
+#bottom {
+  background-image: url('/img/residential-move-photo.jpg');
+  background-size: contain ;
+  background-position: center;
+  min-height: 500px;
+}
