@@ -1,3 +1,5 @@
+// src/app/layout.tsx
+
 import "./globals.css";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '@fortawesome/fontawesome-svg-core/styles.css';
@@ -12,7 +14,7 @@ const roboto = Roboto({
 
 import Header from '../components/Header';
 import Footer from '../components/Footer';
-import Bottom from '../components/PageBottom';
+import PageBottom from '../components/PageBottom';
 export default function RootLayout({
   children,
 }: Readonly<{
