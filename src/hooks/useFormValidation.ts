@@ -1,3 +1,4 @@
+// src/hooks/useFormValidation.ts
 "use client";
 
 import { useState } from "react";
@@ -145,7 +146,10 @@ export function useFormValidation() {
 
     // Mark field as touched and validate it
     setTouched((prev) => ({ ...prev, [name]: true }));
-    const safeValue = type === "checkbox" ? formData[name as keyof FormData] : value;
+    // Provide a fallback for safeValue to ensure it's string | string[]
+    const safeValue = type === "checkbox" 
+      ? (formData[name as keyof FormData] as string[] || []) 
+      : (typeof value === "string" ? value : "");
     const { status, message } = validateField(name as keyof FormData, safeValue);
     setErrors((prev) => ({
       ...prev,

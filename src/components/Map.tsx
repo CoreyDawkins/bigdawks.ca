@@ -1,5 +1,4 @@
 // src/components/Map.tsx
-
 "use client";
 
 import React, { useEffect, useState } from "react";
@@ -25,18 +24,25 @@ const Map: React.FC<MapProps> = ({ fromPostal, toPostal }) => {
   const [path, setPath] = useState<google.maps.LatLngLiteral[]>([]);
   const googleMapsApiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
 
+  console.log("Map Props:", { fromPostal, toPostal }); // Debug props
+
   useEffect(() => {
     if (!googleMapsApiKey) {
       console.error("Google Maps API Key is missing!");
       return;
     }
+    console.log("Google Maps API Key:", googleMapsApiKey); // Debug API key
   }, [googleMapsApiKey]);
 
   useEffect(() => {
-    if (!map || !fromPostal || !toPostal) return;
+    if (!map || !fromPostal || !toPostal) {
+      console.log("Skipping geocoding: map or postal codes missing");
+      return;
+    }
 
     const postalRegex = /^[A-Za-z]\d[A-Za-z]\s?\d[A-Za-z]\d$/;
     if (!postalRegex.test(fromPostal.trim()) || !postalRegex.test(toPostal.trim())) {
+      console.log("Invalid postal codes:", { fromPostal, toPostal });
       return;
     }
 
@@ -48,7 +54,7 @@ const Map: React.FC<MapProps> = ({ fromPostal, toPostal }) => {
           if (status === "OK" && results?.[0]) {
             resolve(results[0].geometry.location);
           } else {
-            reject("Geocoding failed for From Postal Code");
+            reject(`Geocoding failed for From Postal Code: ${status}`);
           }
         });
       }),
@@ -57,7 +63,7 @@ const Map: React.FC<MapProps> = ({ fromPostal, toPostal }) => {
           if (status === "OK" && results?.[0]) {
             resolve(results[0].geometry.location);
           } else {
-            reject("Geocoding failed for To Postal Code");
+            reject(`Geocoding failed for To Postal Code: ${status}`);
           }
         });
       }),
@@ -76,9 +82,10 @@ const Map: React.FC<MapProps> = ({ fromPostal, toPostal }) => {
 
         // Update the path
         setPath(newPath);
+        console.log("Path set:", newPath); // Debug path
       })
       .catch((error) => {
-        console.error(error);
+        console.error("Geocoding error:", error);
       });
   }, [fromPostal, toPostal, map]);
 
@@ -94,37 +101,35 @@ const Map: React.FC<MapProps> = ({ fromPostal, toPostal }) => {
         zoom={10}
         onLoad={(mapInstance) => setMap(mapInstance)}
       >
-        {/* Draw a polyline between the two points */}
         {path.length > 0 && (
           <Polyline
             path={path}
             options={{
-              strokeColor: "#00FF00", // Green color
+              strokeColor: "#00FF00",
               strokeOpacity: 1,
               strokeWeight: 4,
               icons: [
                 {
                   icon: {
-                    path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW, // Arrow at the end
+                    path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
                     scale: 3,
                     strokeColor: "#000000",
                     fillColor: "#000000",
                     fillOpacity: 1,
                   },
-                  offset: "100%", // Place the arrow at the end of the line
+                  offset: "100%",
                 },
               ],
             }}
           />
         )}
 
-        {/* Add a marker for the starting point */}
         {path.length > 0 && (
           <Marker
             position={path[0]}
             icon={{
-              url: "https://maps.google.com/mapfiles/ms/icons/green-dot.png", // Green dot
-              scaledSize: new google.maps.Size(40, 40), // Adjust size if needed
+              url: "https://maps.google.com/mapfiles/ms/icons/green-dot.png",
+              scaledSize: new google.maps.Size(40, 40),
             }}
           />
         )}

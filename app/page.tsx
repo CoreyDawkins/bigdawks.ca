@@ -1,3 +1,4 @@
+// src/app/page.tsx
 "use client";
 
 import Head from "next/head";
@@ -5,6 +6,8 @@ import Script from "next/script";
 import { useCalendars } from "@/hooks/useCalendars";
 import Calendar from "@/components/Calendar";
 import Form from "@/components/Form";
+import Map from "@/components/Map"; // Import Map
+import { useFormValidation } from "@/hooks/useFormValidation"; // Import useFormValidation
 import "../public/moving.css";
 
 export default function Home() {
@@ -20,6 +23,9 @@ export default function Home() {
       }
     }
   );
+
+  // Get formData for fromPostal and toPostal
+  const { formData } = useFormValidation();
 
   return (
     <>
@@ -59,6 +65,14 @@ export default function Home() {
             <div className="col-md-8 mx-auto">
               <h2>Contact Us</h2>
               <Form />
+            </div>
+          </div>
+
+          <div className="row mt-4">
+            <div className="col-md-8 mx-auto">
+              <h3>Move Route</h3>
+              {/* Add Map component with postal codes */}
+              <Map fromPostal={formData.fromPostal} toPostal={formData.toPostal} />
             </div>
           </div>
 
