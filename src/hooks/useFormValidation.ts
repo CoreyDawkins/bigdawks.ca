@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 interface FormData {
   firstName: string;
@@ -19,7 +19,7 @@ interface FormData {
 interface FormErrors {
   firstName?: string;
   lastName?: string;
-  company?: string; // Added to match FormData
+  company?: string;
   fromPostal?: string;
   toPostal?: string;
   email?: string;
@@ -31,6 +31,7 @@ interface FormErrors {
 }
 
 export function useFormValidation() {
+  // Initial form data with empty values
   const [formData, setFormData] = useState<FormData>({
     firstName: "",
     lastName: "",
@@ -45,9 +46,13 @@ export function useFormValidation() {
     comment: "",
   });
 
+  // Errors state to store validation messages
   const [errors, setErrors] = useState<FormErrors>({});
+
+  // Touched state to track which fields the user has interacted with
   const [touched, setTouched] = useState<Partial<Record<keyof FormData, boolean>>>({});
 
+  // Field validation logic
   const validateField = (name: keyof FormData, value: string | string[]): { status: string; message?: string } => {
     const nameRegex = /^[A-Za-z\s.-]+$/;
     const postalRegex = /^[A-Za-z]\d[A-Za-z]\s?\d[A-Za-z]\d$/;
@@ -64,10 +69,7 @@ export function useFormValidation() {
           return { status: "validation-failed", message: `${name === "firstName" ? "First" : "Last"} name must be at least 2 characters.` };
         }
         if (!nameRegex.test(value.trim())) {
-          return {
-            status: "validation-failed",
-            message: `${name === "firstName" ? "First" : "Last"} name can only contain letters, spaces, dots, or hyphens.`,
-          };
+          return { status: "validation-failed", message: `${name === "firstName" ? "First" : "Last"} name can only contain letters, spaces, dots, or hyphens.` };
         }
         return { status: "validation-success" };
       case "fromPostal":
@@ -92,7 +94,7 @@ export function useFormValidation() {
           return { status: "validation-failed", message: "Phone number is required." };
         }
         if (!phoneRegex.test(value.replace(/[\s-()]/g, ""))) {
-          return { status: "validation-failed", message: "Valid phone number is required." };
+          return { status: "validation-failed", message: "Valid phone number (e.g., 1234567890) is required." };
         }
         return { status: "validation-success" };
       case "items":
@@ -111,33 +113,13 @@ export function useFormValidation() {
         }
         return { status: "validation-success" };
       case "comment":
-        return { status: "validation-success" }; // Optional field, no validation
+        return { status: "validation-success" }; // Optional field
       default:
         return { status: "validation-success" };
     }
   };
 
-  useEffect(() => {
-    const newErrors: FormErrors = {};
-    const newTouched: Partial<Record<keyof FormData, boolean>> = { ...touched };
-
-    (Object.keys(formData) as (keyof FormData)[]).forEach((name) => {
-      const value = formData[name];
-      // Handle undefined by providing a default empty string for string fields
-      const safeValue = Array.isArray(value) ? value : (value ?? "");
-      const { status, message } = validateField(name, safeValue);
-      if (status === "validation-failed" && message) {
-        newErrors[name] = message;
-        newTouched[name] = true;
-      } else if (status === "validation-success") {
-        newTouched[name] = true;
-      }
-    });
-
-    setErrors(newErrors);
-    setTouched(newTouched);
-  }, [formData]);
-
+  // Handle input changes and validate in real-time
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
@@ -147,63 +129,76 @@ export function useFormValidation() {
       const checked = (e.target as HTMLInputElement).checked;
       setFormData((prev) => {
         const currentValues = prev[name as keyof FormData] as string[];
-        if (checked) {
-          return {
-            ...prev,
-            [name]: [...currentValues, value],
-          };
-        } else {
-          return {
-            ...prev,
-            [name]: currentValues.filter((item) => item !== value),
-          };
-        }
-      });
-    } else if (name === "firstName" || name === "lastName") {
-      const nameRegex = /^[A-Za-z\s.-]*$/;
-      if (nameRegex.test(value)) {
-        setFormData((prev) => ({
+        return {
           ...prev,
-          [name]: value,
-        }));
-      }
+          [name]: checked
+            ? [...currentValues, value]
+            : currentValues.filter((item) => item !== value),
+        };
+      });
     } else {
       setFormData((prev) => ({
         ...prev,
         [name]: value,
       }));
     }
+
+    // Mark field as touched and validate it
+    setTouched((prev) => ({ ...prev, [name]: true }));
+    const safeValue = type === "checkbox" ? formData[name as keyof FormData] : value;
+    const { status, message } = validateField(name as keyof FormData, safeValue);
+    setErrors((prev) => ({
+      ...prev,
+      [name]: status === "validation-failed" ? message : undefined,
+    }));
   };
 
+  // Handle blur event to validate when user leaves a field
+  const handleBlur = (name: keyof FormData) => {
+    setTouched((prev) => ({ ...prev, [name]: true }));
+    const value = formData[name];
+    const safeValue = Array.isArray(value) ? value : (value ?? "");
+    const { status, message } = validateField(name, safeValue);
+    setErrors((prev) => ({
+      ...prev,
+      [name]: status === "validation-failed" ? message : undefined,
+    }));
+  };
+
+  // Validate entire form on submit
   const validateForm = (): boolean => {
     const newErrors: FormErrors = {};
-
     (Object.keys(formData) as (keyof FormData)[]).forEach((name) => {
       const value = formData[name];
-      // Handle undefined by providing a default empty string for string fields
       const safeValue = Array.isArray(value) ? value : (value ?? "");
       const { status, message } = validateField(name, safeValue);
       if (status === "validation-failed" && message) {
         newErrors[name] = message;
       }
     });
-
     setErrors(newErrors);
+    setTouched((prev) => ({
+      ...prev,
+      ...Object.keys(formData).reduce((acc, key) => ({ ...acc, [key]: true }), {}),
+    }));
     return Object.keys(newErrors).length === 0;
   };
 
+  // Handle form submission
   const handleSubmit = (callback: (data: FormData) => void) => {
     if (validateForm()) {
       callback(formData);
     }
   };
 
+  // Get validation class (only if field is touched)
   const getValidationClass = (name: keyof FormData): string => {
     if (!touched[name]) return "";
     const { status } = validateField(name, formData[name] ?? (Array.isArray(formData[name]) ? formData[name] : ""));
     return status;
   };
 
+  // Get message class (only if field is touched)
   const getMessageClass = (name: keyof FormData): string => {
     if (!touched[name]) return "";
     const { status } = validateField(name, formData[name] ?? (Array.isArray(formData[name]) ? formData[name] : ""));
@@ -214,6 +209,7 @@ export function useFormValidation() {
     formData,
     errors,
     handleInputChange,
+    handleBlur,
     handleSubmit,
     getValidationClass,
     getMessageClass,
