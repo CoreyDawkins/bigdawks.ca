@@ -12,7 +12,7 @@ const roboto = Roboto({
 
 import Header from '../components/Header';
 import Footer from '../components/Footer';
-import Bottom from '../components/Bottom';
+import Bottom from '../components/PageBottom';
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -45,7 +45,7 @@ export default function RootLayout({
             <body className="d-flex flex-column min-vh-100">
                 <Header />
                 <main>{children}</main>
-                <Bottom />
+                <PageBottom />
                 <Footer />
             </body>
         </html>
