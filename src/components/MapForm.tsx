@@ -1,4 +1,3 @@
-tsx
 // src/components/MapForm.tsx
 "use client";
 
