@@ -19,6 +19,7 @@ interface FormData {
 interface FormErrors {
   firstName?: string;
   lastName?: string;
+  company?: string; // Added to match FormData
   fromPostal?: string;
   toPostal?: string;
   email?: string;
@@ -122,7 +123,9 @@ export function useFormValidation() {
 
     (Object.keys(formData) as (keyof FormData)[]).forEach((name) => {
       const value = formData[name];
-      const { status, message } = validateField(name, value);
+      // Handle undefined by providing a default empty string for string fields
+      const safeValue = Array.isArray(value) ? value : (value ?? "");
+      const { status, message } = validateField(name, safeValue);
       if (status === "validation-failed" && message) {
         newErrors[name] = message;
         newTouched[name] = true;
@@ -177,7 +180,9 @@ export function useFormValidation() {
 
     (Object.keys(formData) as (keyof FormData)[]).forEach((name) => {
       const value = formData[name];
-      const { status, message } = validateField(name, value);
+      // Handle undefined by providing a default empty string for string fields
+      const safeValue = Array.isArray(value) ? value : (value ?? "");
+      const { status, message } = validateField(name, safeValue);
       if (status === "validation-failed" && message) {
         newErrors[name] = message;
       }
@@ -195,13 +200,13 @@ export function useFormValidation() {
 
   const getValidationClass = (name: keyof FormData): string => {
     if (!touched[name]) return "";
-    const { status } = validateField(name, formData[name]);
+    const { status } = validateField(name, formData[name] ?? (Array.isArray(formData[name]) ? formData[name] : ""));
     return status;
   };
 
   const getMessageClass = (name: keyof FormData): string => {
     if (!touched[name]) return "";
-    const { status } = validateField(name, formData[name]);
+    const { status } = validateField(name, formData[name] ?? (Array.isArray(formData[name]) ? formData[name] : ""));
     return `${status}-message`;
   };
 

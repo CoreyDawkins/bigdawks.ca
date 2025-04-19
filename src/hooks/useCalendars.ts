@@ -4,7 +4,11 @@ import { useEffect, useRef, useState } from "react";
 import flatpickr from "flatpickr";
 import { useFormValidation } from "@/hooks/useFormValidation";
 
-export function useCalendars() {
+// Define the type for the callback function
+type OnDateSelect = (date: Date | string) => void;
+
+// Update useCalendars to accept an optional onDateSelect callback
+export function useCalendars(onDateSelect?: OnDateSelect) {
   const [calendars, setCalendars] = useState<{ year: number; month: number }[]>([]);
   const preferredDateInputRef = useRef<HTMLInputElement | null>(null);
   const { formData, handleInputChange } = useFormValidation();
@@ -67,6 +71,11 @@ export function useCalendars() {
       });
       handleInputChange(event as any);
       flatpickr(preferredDateInputRef.current).setDate(formattedDate);
+    }
+
+    // Call the onDateSelect callback if it exists
+    if (onDateSelect) {
+      onDateSelect(date);
     }
   };
 

@@ -287,7 +287,19 @@ const Form: React.FC = () => {
           <Flatpickr
             className={`form-control ${getValidationClass("preferredDate")}`}
             value={formData.preferredDate}
-            onChange={([date]) => handleInputChange({ target: { name: "preferredDate", value: date.toISOString().split("T")[0] } })}
+            onChange={([date]) => {
+              const formattedDate = date.toISOString().split("T")[0];
+              const syntheticEvent = {
+                target: {
+                  name: "preferredDate",
+                  value: formattedDate,
+                  addEventListener: () => {},
+                  removeEventListener: () => {},
+                  dispatchEvent: () => true,
+                },
+              } as unknown as React.ChangeEvent<HTMLInputElement>;
+              handleInputChange(syntheticEvent);
+            }}
             options={{
               dateFormat: "Y-m-d",
               altInput: true,
