@@ -5,7 +5,7 @@ import Link from 'next/link';
 
 function Header() {
   return (
-    <div className="">
+    <div className="container">
       <header className="d-flex flex-wrap align-items-center justify-content-center justify-content-md-between py-3 mb-4 border-bottom">
         <Link href="/" className="d-flex align-items-center col-md-3 mb-2 mb-md-0 text-dark text-decoration-none">
           Big Dawks Moving Company
