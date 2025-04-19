@@ -4,8 +4,12 @@ import React from "react";
 import { useFormValidation } from "@/hooks/useFormValidation";
 import "../styles/validation.css";
 
-const Form: React.FC = () => {
-  const {
+interface FormProps {
+  submitHandler: (fromPostal: string, toPostal: string) => void;
+}
+
+const Form: React.FC<FormProps> = ({ submitHandler }) => {
+   const {
     formData,
     errors,
     handleInputChange,
@@ -20,6 +24,7 @@ const Form: React.FC = () => {
     handleSubmit((data) => {
       console.log("Form Data:", data);
       alert("Form submitted successfully!");
+      submitHandler(data.fromPostal, data.toPostal);
     });
   };
 

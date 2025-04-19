@@ -84,6 +84,7 @@ const Map: React.FC<MapProps> = ({ fromPostal, toPostal }) => {
       })
       .catch((error) => {
         console.error("Geocoding error:", error);
+        setPath([defaultCenter, defaultCenter]); // Set path to default center on failure
       });
   }, [fromPostal, toPostal, map]);
 
@@ -99,50 +100,44 @@ const Map: React.FC<MapProps> = ({ fromPostal, toPostal }) => {
         zoom={10}
         onLoad={(mapInstance) => setMap(mapInstance)}
       >
-        {path.length > 0 && (
-          <Polyline
-            path={path}
-            options={{
-              strokeColor: "#00FF00",
-              strokeOpacity: 1,
-              strokeWeight: 4,
-              icons: [
-                {
-                  icon: {
-                    path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
-                    scale: 3,
-                    strokeColor: "#000000",
-                    fillColor: "#000000",
-                    fillOpacity: 1,
-                  },
-                  offset: "100%",
+        <Polyline
+          path={path}
+          options={{
+            strokeColor: "#00FF00",
+            strokeOpacity: 1,
+            strokeWeight: 4,
+            icons: [
+              {
+                icon: {
+                  path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
+                  scale: 3,
+                  strokeColor: "#000000",
+                  fillColor: "#000000",
+                  fillOpacity: 1,
                 },
-              ],
-            }}
-          />
-        )}
+                offset: "100%",
+              },
+            ],
+          }}
+        />
 
-        {path.length > 0 && (
-          <Marker
-            position={path[0]}
-            icon={{
-              url: "https://maps.google.com/mapfiles/ms/icons/green-dot.png",
-              scaledSize: new google.maps.Size(30, 30),
-            }}
-            title="From Location"
-          />
-        )}
+        <Marker
+          position={path.length > 1 ? path[0] : defaultCenter}
+          icon={{
+            url: "https://maps.google.com/mapfiles/ms/icons/green-dot.png",
+            scaledSize: new google.maps.Size(30, 30),
+          }}
+          title="From Location"
+        />
 
-        {path.length > 0 && (
-          <Marker
-            position={path[1]}
-            icon={{
-              url: "https://maps.google.com/mapfiles/ms/icons/red-dot.png",
-              scaledSize: new google.maps.Size(30, 30),
-            }}
-            title="To Location"
-          />
-        )}
+        <Marker
+          position={path.length > 1 ? path[1] : defaultCenter}
+          icon={{
+            url: "https://maps.google.com/mapfiles/ms/icons/red-dot.png",
+            scaledSize: new google.maps.Size(30, 30),
+          }}
+          title="To Location"
+        />
       </GoogleMap>
     </LoadScript>
   );
