@@ -1,4 +1,3 @@
-tsx
 import React from 'react';
 
 function Header() {
@@ -6,7 +5,7 @@ function Header() {
     <div>
       Big Dawks Moving Company
     </div>
-  );;
+  );
 }
 
 export default Header;
