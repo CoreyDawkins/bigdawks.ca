@@ -5,7 +5,7 @@ import { useFormValidation } from "@/hooks/useFormValidation";
 import "../styles/validation.css";
 
 interface FormProps {
-  submitHandler: (fromPostal: string, toPostal: string) => void;
+  submitHandler: (formData: any) => void;
 }
 
 const Form: React.FC<FormProps> = ({ submitHandler }) => {
@@ -24,7 +24,7 @@ const Form: React.FC<FormProps> = ({ submitHandler }) => {
     handleSubmit((data) => {
       console.log("Form Data:", data);
       alert("Form submitted successfully!");
-      submitHandler(data.fromPostal, data.toPostal);
+      submitHandler(data);
     });
   };
 
